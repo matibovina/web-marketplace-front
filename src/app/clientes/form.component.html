@@ -1,53 +1,174 @@
+<ul class="alert alert-danger" *ngIf="errores?.length > 0">
+  <li *ngFor="let err of errores">{{ err }}</li>
+</ul>
+
 <div class="card bg-dark text-white">
-    <div class="card-header"> {{ titulo }}   </div>
-        <div class="card-body">
-
-            <form>
-                <div class="form-group row">
-                    <label for="nombre" class="col-form-label col-sm-2">Nombre</label>
-                    <div>
-                        <input class="form-control" type="text" name="nombre" id=""
-                        [(ngModel)]="cliente.nombre">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="apellido" class="col-form-label col-sm-2">Apellido</label>
-                    <div>
-                        <input class="form-control" type="text" name="apellido" [(ngModel)]="cliente.apellido" id="">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="email" class="col-form-label col-sm-2">Email</label>
-                    <div>
-                        <input class="form-control" type="text" name="email" [(ngModel)]="cliente.email" id="">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="telefono" class="col-form-label col-sm-2">Telefono</label>
-                    <div>
-                        <input class="form-control" type="text" name="telefono" [(ngModel)]="cliente.telefono" id="">
-                    </div>
-                </div>
-                
-                <div class="form-group row">
-                    <label for="fecha-nac" class="col-form-label col-sm-2">Fecha Nacimiento</label>
-                    <div>
-                        <input class="form-control" type="text" name="fecha-nac" [(ngModel)]="cliente.fechaNacimiento" id="">
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <div class="col-sm-6">
-                        <button class="btn btn-primary" role="button" (click)="create()" *ngIf="!cliente.id else elseBlock">Crear</button>
-                        <ng-template #elseBlock>
-                            <button class="btn btn-primary" role="button" (click)="update()">Actualizar</button>
-                        </ng-template>
-                        
-                    </div>
-                </div>
-                
-            </form>
-
+  <div class="card-header">{{ titulo }}</div>
+  <div class="card-body">
+    <form #formularioCliente="ngForm">
+      <div class="form-group row">
+        <label for="nombre" class="col-form-label col-sm-2">Nombre</label>
+        <div>
+          <input
+            class="form-control"
+            type="text"
+            name="nombre"
+            id=""
+            [(ngModel)]="cliente.nombre"
+            required
+            minlength="2"
+            #nombre="ngModel"
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)"
+          >
+            <div *ngIf="nombre.errors?.['required']">
+              El nombres es obligatorio
+            </div>
+            <div *ngIf="nombre.errors?.['minlength']">
+              El nombre debe tener al menos 2 caracteres.
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div class="form-group row">
+        <label for="apellido" class="col-form-label col-sm-2">Apellido</label>
+        <div>
+          <input
+            class="form-control"
+            type="text"
+            name="apellido"
+            [(ngModel)]="cliente.apellido"
+            id=""
+            #apellido="ngModel"
+            required
+            minlength="2"
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)"
+          >
+            <div *ngIf="apellido.errors?.['required']">
+              El apellidos es obligatorio.
+            </div>
+            <div *ngIf="apellido.errors?.['minlength']">
+              El apellido debe tener al menos 2 caracteres.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="email" class="col-form-label col-sm-2">Email</label>
+        <div>
+          <input
+            class="form-control"
+            type="email"
+            #email="ngModel"
+            name="email"
+            email
+            [(ngModel)]="cliente.email"
+            id=""
+            required
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="email.invalid && (email.dirty || email.touched)"
+          >
+            <div *ngIf="email.errors?.['required']">
+              El email es es obligatorio.
+            </div>
+            <div *ngIf="email.errors?.['email']">
+              El formato de email es incorrecto
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="telefono" class="col-form-label col-sm-2">Telefono</label>
+        <div>
+          <input
+            class="form-control"
+            type="text"
+            #telefono="ngModel"
+            name="telefono"
+            [(ngModel)]="cliente.telefono"
+            id=""
+            required
+            minlength="9"
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)"
+          >
+            <div *ngIf="telefono.errors?.['required']">
+              El telefonos es obligatorio.
+            </div>
+            <div *ngIf="telefono.errors?.['minlength']">
+              El telefono debe tener al menos 9 caracteres.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="fecha-nac" class="col-form-label col-sm-2"
+          >Fecha Nacimiento</label
+        >
+        <div>
+          <input
+            class="form-control"
+            type="date"
+            name="fecha-nac"
+            #fechaNacimiento="ngModel"
+            [(ngModel)]="cliente.fechaNacimiento"
+            id=""
+            required
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="
+              fechaNacimiento.invalid &&
+              (fechaNacimiento.dirty || fechaNacimiento.touched)
+            "
+            placeholder="dd-mm-yyyy"
+          >
+            <div *ngIf="fechaNacimiento.errors?.['required']">
+              La fecha de nacimiento es obligatorio.
+            </div>
+            <div *ngIf="fechaNacimiento.errors?.['date']">
+              La fecha de nacimiento es obligatorio.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-sm-6">
+          <button
+            class="btn btn-primary"
+            role="button"
+            (click)="create()"
+            *ngIf="!cliente.id; else elseBlock"
+            [disabled]="!formularioCliente.form.valid"
+          >
+            Crear
+          </button>
+          <ng-template #elseBlock>
+            <button
+              class="btn btn-primary"
+              role="button"
+              (click)="update()"
+              [disabled]="!formularioCliente.form.valid"
+            >
+              Actualizar
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>

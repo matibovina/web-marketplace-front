@@ -1,3 +1,5 @@
+import { ActivatedRoute } from '@angular/router';
+import { tap } from 'rxjs/operators';
 import { ClienteService } from './cliente.service';
 import { Component, OnInit } from '@angular/core';
 import { Cliente } from './cliente';
@@ -6,61 +8,64 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
-  styleUrls: ['./clientes.component.css']
+  styleUrls: ['./clientes.component.css'],
 })
 export class ClientesComponent implements OnInit {
-
   clientes: Cliente[];
+  paginador: any;
 
-  constructor(private clientesService: ClienteService) {}
+  constructor(
+    private clientesService: ClienteService,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.clientesService.getClientes().subscribe(
-      clientes =>  this.clientes = clientes
-      
-    );
+
+    this.clientesService
+      .getClientes()
+      .subscribe((clientes) => (this.clientes = clientes));
+
+ /*   this.activatedRoute.paramMap.subscribe((params) => {
+      let page: number = +params.get('page');
+      if(!page){
+        page = 0
+      }
+      this.clientesService
+        .getClientes(page)
+        .pipe(
+          tap((response) => {
+            (response.content as Cliente[]).forEach((cliente) => {
+              console.log(cliente.nombre);
+            });
+          })
+        )
+        .subscribe(
+          (response) => {(this.clientes = response.content as Cliente[]),
+            this.paginador = response;
+        });
+    }); */
   }
 
-  delete(cliente: Cliente): void{
-
-  /*  confirmAction();
-
-    function confirmAction(){
-      let confirmAction = confirm("Estas seguro que quieres borrarlo?")
-      if(confirmAction) {
-        alert(`El cliente ${this.cliente} se borro exitosamente.`)
-      } else {
-        alert('No se borro.')
-      }
-    } */
-
-
+  delete(cliente: Cliente): void {
     Swal.fire({
       title: `Estas seguro de borrar a ${cliente.nombre} ${cliente.apellido}?`,
-      text: "No podras revertir esta accion!",
+      text: 'No podras revertir esta accion!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, borrarlo!'
+      confirmButtonText: 'Si, borrarlo!',
     }).then((result) => {
       if (result.isConfirmed) {
-
-        this.clientesService.deleteCliente(cliente.id).subscribe(
-          response => {
-            this.clientes = this.clientes.filter(cli => cli !== cliente)
-            Swal.fire(
-              'Borrado!',
-              `El cliente ${cliente.nombre} ha sido borrado.`,
-              'success'
-            )
-          }
-        )
-
-       
+        this.clientesService.deleteCliente(cliente.id).subscribe(() => {
+          this.clientes = this.clientes.filter((cli) => cli !== cliente);
+          Swal.fire(
+            'Borrado!',
+            `El cliente ${cliente.nombre} ha sido borrado.`,
+            'success'
+          );
+        });
       }
-    })
+    });
   }
-
-
 }

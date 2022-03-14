@@ -1,29 +1,36 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { ClientesComponent } from './clientes/clientes.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { RouterModule, Routes } from '@angular/router';
 import { ProductosComponent } from './productos/productos.component';
-import { HttpClientModule } from '@angular/common/http';
 import { FormComponent } from './clientes/form.component';
 import { FormProductoComponent } from './productos/form.component';
+import { PaginatorComponent } from './paginator/paginator.component';
 
 import { FormsModule } from '@angular/forms';
+import { registerLocaleData } from '@angular/common';
+import { RouterModule, Routes } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
-  const routes: Routes = [
-    {path: '', redirectTo: '/', pathMatch: 'full'},
-    {path: 'clientes', component: ClientesComponent},
-    {path: 'productos', component: ProductosComponent},
-    {path: 'clientes/form', component: FormComponent},
-    {path: 'clientes/form/:id', component: FormComponent},
-    {path: 'productos/form', component: FormProductoComponent},
-    {path: 'productos/form/:id', component: FormProductoComponent},
-  
-  ];
+import localeES from '@angular/common/locales/es';
+import { DetalleComponent } from './productos/detalle/detalle.component';
+registerLocaleData(localeES, 'es');
 
+const routes: Routes = [
+  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: 'clientes', component: ClientesComponent },
+  { path: 'clientes/page/:page', component: ClientesComponent },
+  { path: 'productos', component: ProductosComponent },
+  { path: 'productos/page/:page', component: ProductosComponent },
+  { path: 'clientes/form', component: FormComponent },
+  { path: 'clientes/form/:id', component: FormComponent },
+  { path: 'productos/form', component: FormProductoComponent },
+  { path: 'productos/form/:id', component: FormProductoComponent },
+  //{ path: 'productos/ver/:id', component: DetalleComponent },
+];
 
 @NgModule({
   declarations: [
@@ -33,15 +40,17 @@ import { FormsModule } from '@angular/forms';
     ClientesComponent,
     ProductosComponent,
     FormProductoComponent,
-    FormComponent
+    FormComponent,
+    PaginatorComponent,
+    DetalleComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [{ provide: LOCALE_ID, useValue: 'es' }],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
