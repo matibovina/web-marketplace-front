@@ -5,6 +5,7 @@ import { Cliente } from './cliente';
 import { Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, catchError, tap } from 'rxjs/operators';
+import { AuthService } from '../usuarios/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,14 +15,28 @@ export class ClienteService {
 
   private httpHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
-  
+  private addAuthorizationHeader(){
+    let token = this.authService.token;
+    if(token != null){
+      return this.httpHeaders.append('Authorization', 'Bearer' + token);
+    }
+    return this.httpHeaders;
+  }
+
+  private isNoAuthorized(e): boolean {
+    if(e.status==401 || e.status == 403){
+      this.router.navigate(['/login'])
+      return true;
+    }
+    return false;
+  }
 
   getClientes(): Observable<Cliente[]>{
     //return of(CLIENTES);
 
-    return this.http.get(this.urlEndPoint).pipe(
+    return this.http.get(this.urlEndPoint, {headers:this.addAuthorizationHeader()}).pipe(
       tap(response => {
         let clientes = response as Cliente[];
         clientes.forEach( cliente => {
@@ -39,6 +54,9 @@ export class ClienteService {
         )
       }),
       catchError(e => {
+        // if(this.isNoAuthorized(e)){
+        //   return throwError(() => e); 
+        // }
         this.router.navigate(['/clientes']);
         console.error(e.error.mensaje);
         
@@ -50,10 +68,13 @@ export class ClienteService {
 
   create(cliente: Cliente): Observable<Cliente> {
     return this.http
-      .post(this.urlEndPoint, cliente, { headers: this.httpHeaders })
+      .post(this.urlEndPoint, cliente, {headers:this.addAuthorizationHeader()})
       .pipe(
         map((response: any) => response.cliente as Cliente),
         catchError((e) => {
+          if(this.isNoAuthorized(e)){
+            return throwError(() => e); 
+          }
           if (e.status == 400) {
             return throwError(() => e);
           }
@@ -65,8 +86,11 @@ export class ClienteService {
   }
 
   getCliente(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
+    return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`, {headers:this.addAuthorizationHeader()}).pipe(
       catchError((e) => {
+        if(this.isNoAuthorized(e)){
+          return throwError(() => e); 
+        }
         this.router.navigate(['/clientes']);
         console.error(e.error.mensaje);
 
@@ -78,11 +102,12 @@ export class ClienteService {
 
   updateCliente(cliente: Cliente): Observable<any> {
     return this.http
-      .put<any>(`${this.urlEndPoint}/${cliente.id}`, cliente, {
-        headers: this.httpHeaders,
-      })
+      .put<any>(`${this.urlEndPoint}/${cliente.id}`, cliente, {headers:this.addAuthorizationHeader()})
       .pipe(
         catchError((e) => {
+          if(this.isNoAuthorized(e)){
+            return throwError(() => e); 
+          }
           console.error(e.error.mensaje);
           swal.fire('Error al editar', e.error.mensaje, 'error');
           return throwError(() => e);
@@ -92,11 +117,12 @@ export class ClienteService {
 
   deleteCliente(id: number): Observable<Cliente> {
     return this.http
-      .delete<Cliente>(`${this.urlEndPoint}/${id}`, {
-        headers: this.httpHeaders,
-      })
+      .delete<Cliente>(`${this.urlEndPoint}/${id}`, {headers:this.addAuthorizationHeader()})
       .pipe(
         catchError((e) => {
+          if(this.isNoAuthorized(e)){
+            return throwError(() => e); 
+          }
           this.router.navigate(['/clientes']);
           console.error(e.error.mensaje);
 

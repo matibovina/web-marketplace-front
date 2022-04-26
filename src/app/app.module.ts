@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import localeES from '@angular/common/locales/es';
 import { DetalleComponent } from './productos/detalle/detalle.component';
+import { LoginComponent } from './usuarios/login.component';
 registerLocaleData(localeES, 'es');
 
 const routes: Routes = [
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'clientes/form/:id', component: FormComponent },
   { path: 'productos/form', component: FormProductoComponent },
   { path: 'productos/form/:id', component: FormProductoComponent },
+  { path: 'login', component: LoginComponent },
   //{ path: 'productos/ver/:id', component: DetalleComponent },
 ];
 
@@ -43,6 +45,7 @@ const routes: Routes = [
     FormComponent,
     PaginatorComponent,
     DetalleComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
