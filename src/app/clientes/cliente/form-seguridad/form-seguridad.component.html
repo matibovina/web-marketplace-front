@@ -1,0 +1,30 @@
+<div class="cliente-form form">
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit()" [mustMatch]="['password', 'confirmPassword']" novalidate>
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="">Contraseña actual</label>
+            <input type="password" class="form-control" id="">
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="password">Contraseña</label>
+          <input type="password" name="password" class="form-control" id="password" [(ngModel)]="usuario.password" #password="ngModel" [ngClass]="{ 'is-invalid': registerForm.submitted && password.invalid }" minlength="6" required>
+          <!-- <span *ngIf="password.touched && password.errors && password.errors?.['required']">Password requerido</span> -->
+          <div *ngIf="registerForm.submitted && password.invalid" class="invalid-feedback"></div>
+              <div *ngIf="password.errors?.['required']">Password is required</div>
+              <div *ngIf="password.errors?.['minlength']">Password must be at least 6 characters</div>  
+      </div>
+        <div class="form-group col-md-6">
+          <label for="confirmPassword">Confirmar Contraseña</label>
+          <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" #confirmPassword="ngModel" [(ngModel)]="usuario.confirmPassword" [ngClass]="{ 'is-invalid': registerForm.submitted && confirmPassword.invalid }" required>
+          <!-- <div *ngIf="registerForm.submitted && confirmPassword.invalid" class="invalid-feedback"> -->
+              <div *ngIf="confirmPassword.errors?.['required']">Confirm Password is required</div>
+              <div *ngIf="confirmPassword.errors?.['mustMatch']">Passwords must match</div>
+              <span *ngIf="confirmPassword.touched && confirmPassword.errors && confirmPassword.errors?.['required']">Password requerido</span>
+
+      </div>
+       
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>

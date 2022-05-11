@@ -15,7 +15,7 @@ export class ProductoService {
   private urlEndPoint: string = 'http://localhost:8080/api/productos';
   private httpHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   private addAuthorizationHeader(){
     let token = this.authService.token;
@@ -26,8 +26,13 @@ export class ProductoService {
   }
 
   private isNoAuthorized(e): boolean {
-    if(e.status==401 || e.status == 403){
+    if(e.status==401){
       this.router.navigate(['/login'])
+      return true;
+    }
+    if(e.status==403){
+      this.router.navigate(['/productos'])
+      swal.fire('Acceso denegado', `Hola ${this.authService.usuario.username} no tienes acceso a este recurso.`, 'warning')
       return true;
     }
     return false;
@@ -74,7 +79,7 @@ export class ProductoService {
   }
 
   getProducto(id: number): Observable<Producto> {
-    return this.http.get<Producto>(`${this.urlEndPoint}/${id}`).pipe(
+    return this.http.get<Producto>(`${this.urlEndPoint}${id}`).pipe(
       catchError((e) => {
         if(this.isNoAuthorized(e)){
           return throwError(() => e); 
@@ -89,7 +94,7 @@ export class ProductoService {
 
   updateProducto(producto: Producto): Observable<Producto> {
     return this.http.put<Producto>(
-      `${this.urlEndPoint}/${producto.id}`,
+      `${this.urlEndPoint}${producto.id}`,
       producto, {headers:this.addAuthorizationHeader()}
     ).pipe(
       catchError((e) => {
@@ -103,15 +108,15 @@ export class ProductoService {
     );;
   }
 
-  deleteProducto(id: number): Observable<Producto> {
-    return this.http.delete<Producto>(`${this.urlEndPoint}/${id}`, {headers:this.addAuthorizationHeader()}).pipe(
+  deleteProducto(id: any): Observable<Producto> {
+    return this.http.delete<Producto>(`${this.urlEndPoint}/${id}`, {headers: this.addAuthorizationHeader()}).pipe(
       catchError((e) => {
         if(this.isNoAuthorized(e)){
           return throwError(() => e); 
         }
-        this.router.navigate(['/productos']);
+        //this.router.navigate(['/productos']);
         console.error(e.error.mensaje);
-        swal.fire('Error al eliminar', e.error.mensaje, 'error');
+        //swal.fire('Error al eliminar', e.error.mensaje, 'error');
         return throwError(() => e);
       })
     );;
@@ -125,7 +130,7 @@ export class ProductoService {
     let httpHeaders = new HttpHeaders();
     let token = this.authService.token;
     if(token != null){
-      httpHeaders.append('Authorization', 'Bearer' + token);
+      httpHeaders = httpHeaders.append('Authorization', 'Bearer' + token);
     }
 
     const req = new HttpRequest('POST', `${this.urlEndPoint}/upload`, formData, {

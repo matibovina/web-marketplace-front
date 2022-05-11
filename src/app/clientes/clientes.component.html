@@ -5,6 +5,7 @@
 
     <div class="my-2 text-left">
       <button
+      *ngIf="authService.hasRole('ROLE_ADMIN')"
         class="btn btn-rounded btn-primary"
         type="button"
         [routerLink]="['/clientes/form']"
@@ -14,7 +15,7 @@
     </div>
     <div class="alert alert-info" *ngIf="clientes?.length <= 0">
       No hay registros en la base de datos.
-    </div>
+    </div> 
     <table
       class="table table-bordered table-striped"
       *ngIf="clientes?.length > 0"
@@ -64,3 +65,4 @@
     <!-- <paginator-nav *ngIf="paginador" [paginador]="paginador" ></paginator-nav> -->
   </div>
 </div>
+

@@ -1,3 +1,4 @@
+import { Usuario } from './../usuarios/usuario';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { ClienteService } from './cliente.service';
@@ -5,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from './cliente';
 import swal from 'sweetalert2';
 import Swal from 'sweetalert2';
+import { AuthService } from '../usuarios/auth.service';
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
@@ -14,9 +16,12 @@ export class ClientesComponent implements OnInit {
   clientes: Cliente[];
   paginador: any;
 
+  usuario: Usuario;
+
   constructor(
     private clientesService: ClienteService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +52,12 @@ export class ClientesComponent implements OnInit {
   }
 
   delete(cliente: Cliente): void {
+    console.log(
+    this.authService.usuario.id, ' ',
+    cliente.id
+    );
+    if(this.authService.hasRole('ROLE_ADMIN') || this.authService.usuario.id == cliente.id){
+
     Swal.fire({
       title: `Estas seguro de borrar a ${cliente.nombre} ${cliente.apellido}?`,
       text: 'No podras revertir esta accion!',
@@ -67,5 +78,9 @@ export class ClientesComponent implements OnInit {
         });
       }
     });
+  } else {
+    swal.fire('ACCESO DENEGADO', 'No estas autorizado', 'warning')
+    
+  }
   }
 }

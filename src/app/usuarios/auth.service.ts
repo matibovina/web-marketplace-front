@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Usuario } from './usuario';
 
 @Injectable({
@@ -10,6 +10,8 @@ export class AuthService {
 
   private _usuario: Usuario;
   private _token: string;
+  tokenSubscription = new Subscription()
+  timeout;
 
   constructor(private http: HttpClient) {
 
@@ -44,16 +46,31 @@ export class AuthService {
     params.set('grant_type', 'password');
     params.set('username', usuario.username);
     params.set('password', usuario.password);
-    console.log(params.toString());
+    //console.log(params.toString());
+    return this.http.post<any>(urlEndPoint, params.toString(), {headers: httpHeaders});
+  }
+
+    updatePassword(usuario: Usuario):Observable<any>{
+    const urlEndPoint = 'http://localhost:8080/oauth/token';
+    const credenciales = btoa('angularapp' + ':' + '12345');
+    const httpHeaders = new HttpHeaders({
+  'Content-Type': 'application/x-www-form-urlencoded',
+  'Authorization': 'Basic ' + credenciales});
+    let params = new URLSearchParams();
+    params.set('grant_type', 'password');
+    params.set('username', usuario.username);
+    params.set('password', usuario.password);
+    //console.log(params.toString());
     return this.http.post<any>(urlEndPoint, params.toString(), {headers: httpHeaders});
   }
 
   guardarUsuario(accessToken:string):void{
     let payload = this.obtenerDatosToken(accessToken);
     this._usuario = new Usuario();
-    this._usuario.email = payload.usuario_email1;
+    this._usuario.email = payload.usuario_email;
     this._usuario.username = payload.user_name;
     this._usuario.roles = payload.authorities;
+    this._usuario.id = payload.usuario_id;
 
     sessionStorage.setItem('usuario', JSON.stringify(this._usuario));
   }
@@ -73,6 +90,13 @@ export class AuthService {
   isAuthenticated():boolean{
     let payload = this.obtenerDatosToken(this.token);
     if(payload != null && payload.user_name && payload.user_name.length > 0){
+      return true;
+    }
+    return false;
+  }
+
+  hasRole(role: string): boolean {
+    if (this.usuario.roles.includes(role)) {
       return true;
     }
     return false;

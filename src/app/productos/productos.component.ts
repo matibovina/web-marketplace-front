@@ -38,7 +38,7 @@ export class ProductosComponent implements OnInit {
         .pipe(
           tap((response) => {
             (response.content as Producto[]).forEach((producto) => {
-              console.log(producto.nombre);
+              //console.log(producto.nombre);
             });
           })
         )
@@ -48,60 +48,54 @@ export class ProductosComponent implements OnInit {
         });
     });
 
-    this.modalService.notificarUpload.subscribe(
-      producto => {
-        this.productos = this.productos.map(
-           productoOriginal => {
-            if(producto.id == productoOriginal.id){
-              productoOriginal.imagen = producto.imagen;
-            }
-            return productoOriginal;
-          }
-        )
-      }
-    );
+    this.modalService.notificarUpload.subscribe((producto) => {
+      this.productos = this.productos.map((productoOriginal) => {
+        if (producto.id == productoOriginal.id) {
+          productoOriginal.imagen = producto.imagen;
+        }
+        return productoOriginal;
+      });
+    });
   }
 
   deleteProducto(producto: Producto): void {
-    if (confirm('Seguro que quieres borrar el producto?')) {
-      let alertConfirm = () =>
+    Swal.fire({
+      title: `Estas seguro de borrar a ${producto.nombre}?`,
+      text: 'No podras revertir esta accion!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, borrarlo!',
+    }).then((result) => {
+      if (result.isConfirmed) {
         this.productoService
           .deleteProducto(producto.id)
           .subscribe((response) => {
             this.productos = this.productos.filter((prod) => prod !== producto);
-            alert(`${producto.nombre} borrado con exito!`);
+            Swal.fire(
+              'Borrado!',
+              `${producto.nombre} ha sido borrado.`,
+              'success'
+            );
           });
-    }
+      }
+    });
+    // if (confirm('Seguro que quieres borrar el producto?')) {
+    //   //let alertConfirm = () =>
+    //   this.productoService.deleteProducto(producto.id).subscribe((response) => {
+    //     this.productos = this.productos.filter((prod) => prod !== producto);
+    //     swal.fire(
+    //       'Borrado exitos',
+    //       `Producto ${producto.nombre} eliminado`,
+    //       'success'
+    //     );
+    //   });
+    // }
   }
 
-  abrirModal(producto: Producto){
+  abrirModal(producto: Producto) {
     this.productoSeleccionado = producto;
     this.modalService.abrirModal();
   }
-
 }
-/*  Swal.fire({
-        title: `Estas seguro de borrar a ${producto.nombre}?`,
-        text: "No podras revertir esta accion!", 
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, borrarlo!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-  
-          this.productoService.deleteProducto(producto.id).subscribe(
-            response => {
-              this.productos = this.productos.filter(prod => prod !== producto)
-              Swal.fire(
-                'Borrado!',
-                `${producto.nombre} ha sido borrado.`,
-                'success'
-              )
-            }
-          )
-  
-         
-        }
-      }) */
