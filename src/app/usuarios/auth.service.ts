@@ -72,6 +72,8 @@ export class AuthService {
     this._usuario.roles = payload.authorities;
     this._usuario.id = payload.usuario_id;
 
+    //something para probar la branch
+
     sessionStorage.setItem('usuario', JSON.stringify(this._usuario));
   }
 
