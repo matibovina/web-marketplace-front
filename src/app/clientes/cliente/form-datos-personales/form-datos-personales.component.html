@@ -1,0 +1,75 @@
+<ul class="alert alert-danger" *ngIf="errores?.length > 0">
+  <li *ngFor="let err of errores">{{ err }}</li>
+</ul>
+<!-- <h2 class="">{{ titulo }}<h2> -->
+
+<div class="cliente-form form">
+
+    <form>
+      <fieldset class="form-row">
+        
+          <div class="form-group col-md-6">
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" class="form-control" id="nombre" [(ngModel)]="cliente.nombre" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="apellido">Apellido</label>
+            <input type="text" name="apellido" class="form-control" id="" [(ngModel)]="cliente.apellido" required>
+          </div>
+        </fieldset>
+        <fieldset class="form-row">
+        <div class="form-group col-md-6">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" id="inputEmail4" [(ngModel)]="cliente.email" required>
+          </div> 
+          <div class="form-group col-md-6">
+            <label for="telefono">Telefono</label>
+            <input type="number" class="form-control" name="telefono" id="telefono" [(ngModel)]="cliente.telefono" required>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-row">
+        <div class="form-group col-md-6">
+          <label for="fechaNacimiento">Fecha de Nacimiento</label>
+          <input type="date" name="fechaNacimiento" class="form-control" id="fechaNac" [(ngModel)]="cliente.fechaNacimiento" required>
+        </div>
+    </fieldset>
+        <fieldset class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputAddress">Dirreccion</label>
+          <input type="text" name="inputAddress" class="form-control" id="inputAddress" placeholder="Calle y numero" [(ngModel)]="cliente.id" [ngModelOptions]="{standalone: true}">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputAddress2">Dirrecion 2</label>
+          <input type="text" name="inputAddress2" class="form-control" id="inputAddress2" placeholder="Escalera, Piso, Puerta">
+        </div>
+    </fieldset>
+        <fieldset class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputCity">Ciudad</label>
+            <input type="text" class="form-control" name="inputCity" id="inputCity">
+          </div>
+          <div class="form-group col-md-4">
+            <label for="inputState">Provincia</label>
+            <select id="inputState" class="form-control" name="inputState">
+              <option selected>Choose...</option>
+              <option>...</option>
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <label for="inputZip">Codigo Postal</label>
+            <input type="text" class="form-control" id="inputZip" name="inputZip">
+          </div>
+        </fieldset>
+        <fieldset class="form-group">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="gridCheck" name="gridCheck">
+            <label class="form-check-label" for="gridCheck">
+              La direccion de envio y facturacion son la misma
+            </label>
+          </div>
+        </fieldset>
+        <button class="btn btn-primary"
+        (click)="update()">Guardar</button>
+      </form>
+    </div>
